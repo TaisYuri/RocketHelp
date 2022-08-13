@@ -1,12 +1,51 @@
-import { HStack, IconButton, VStack, useTheme, Heading, Text } from "native-base";
-import { SignOut } from "phosphor-react-native";
 import React, { useState } from "react";
+import {
+  HStack,
+  IconButton,
+  VStack,
+  useTheme,
+  Heading,
+  Text,
+  FlatList,
+  Center,
+} from "native-base";
+import { ChatTeardropText} from 'phosphor-react-native'
+import { SignOut } from "phosphor-react-native";
 import Logo from "../assets/logo_secondary.svg";
+import { Button } from "../components/Button";
 import { Filter } from "../components/Filter";
+import { Order, OrderProps } from "../components/Order";
+import {useNavigation} from '@react-navigation/native'
 
 export function Home() {
   const { colors } = useTheme();
-  const [selected, setSelected] = useState<'open' | 'closed'>('open')
+  const navigation = useNavigation();
+  const [selected, setSelected] = useState<"open" | "closed">("open");
+
+  const [orders, setOrders] = useState<OrderProps[]>([
+    {
+      id: "123",
+      patrimony: "123456",
+      when: "17/07/2022 as 10hr",
+      status: "open",
+    },
+    {
+      id: "1234",
+      patrimony: "123456",
+      when: "17/07/2022 as 10hr",
+      status: "closed",
+    },
+  ]);
+
+  function handleNewOrder(){
+    navigation.navigate('new')
+  }
+
+  function handleOpenDetails(orderId: string){
+    navigation.navigate('details', { orderId})
+  }
+
+
   return (
     <VStack flex={1} pb={6} bg="gray.700">
       <HStack
@@ -19,18 +58,57 @@ export function Home() {
         bg="gray.600"
       >
         <Logo />
-        <IconButton icon={<SignOut size={26} color={colors.gray['300']}/>} />
+        <IconButton icon={<SignOut size={26} color={colors.gray["300"]} />} />
       </HStack>
 
       <VStack flex={1} px={6} mt={6}>
-        <HStack  w="full" justifyContent="space-between" alignItems="center" mb={4}>
-            <Heading color='gray.100'>Meus chamados</Heading>
-            <Text color='gray.200'>3</Text>
+        <HStack
+          w="full"
+          justifyContent="space-between"
+          alignItems="center"
+          mb={4}
+        >
+          <Heading color="gray.100">Meus chamados</Heading>
+          <Text color="gray.200">{orders.length}</Text>
         </HStack>
-        <HStack w="full" justifyContent="space-between" alignItems="center" mb={4}>
-            <Filter title='Em aberto' type="open" onPress={() =>setSelected('open')} isActive={selected === 'open'}/>
-            <Filter title='Fechado' type="closed" onPress={() =>setSelected('closed')} isActive={selected === 'closed'}/>
+        <HStack
+          w="full"
+          justifyContent="space-between"
+          alignItems="center"
+          mb={4}
+          space={3}
+        >
+          <Filter
+            title="Em aberto"
+            type="open"
+            onPress={() => setSelected("open")}
+            isActive={selected === "open"}
+          />
+          <Filter
+            title="Fechado"
+            type="closed"
+            onPress={() => setSelected("closed")}
+            isActive={selected === "closed"}
+          />
         </HStack>
+
+        <FlatList
+          data={orders}
+          renderItem={({ item }) => <Order data={item} onPress={() =>handleOpenDetails(item.id)}/>}
+          keyExtractor={(item) => item.id}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ paddingBottom: 70}}
+          ListEmptyComponent={() =>
+            <Center mt={6}>
+              <ChatTeardropText color={colors.gray[300]}/>
+              <Text color="gray.300" fontSize='xl' mt={6} alignItems="center">
+                Você ainda não possui {'\n'} 
+                solicitações {selected === 'open' ? 'em andamento': 'finalizados'}
+              </Text>
+            </Center>
+          }
+        />
+        <Button title="Nova solicitação" onPress={handleNewOrder}/>
       </VStack>
     </VStack>
   );

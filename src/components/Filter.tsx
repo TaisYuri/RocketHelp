@@ -17,7 +17,8 @@ export function Filter({ title, isActive = false, type, ...rest }: props) {
       flex={1}
       borderColor={colorTypes}
       borderWidth={isActive ? 1 : 0}
-      bg="gray.600"
+      // bg="gray.600"
+      {...rest}
     >
       <Text
         color={isActive ? colorTypes : "gray.300"}
