@@ -22,3 +22,6 @@ export default function App() {
   );
 }
  
+
+
+//expo run:android
